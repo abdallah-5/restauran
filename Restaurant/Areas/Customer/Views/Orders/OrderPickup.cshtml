@@ -1,0 +1,176 @@
+﻿@model PagingOrderDetailsViewModel
+
+@{
+    ViewData["Title"] = "Order Pickup";
+}
+
+<form method="get">
+    <br />
+    <br />
+
+    <h1 class="text-info mb-3">Order Ready For The Pickup.</h1>
+    <div class="whiteBackground border">
+        <div class="container border border-secondary" style="height:60px;">
+            <div class="row">
+                <div class="col-11">
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-4">
+                            @Html.Editor("searchName", new { htmlAttributes = new { @class = "form-control", @placeholder = "Name..." } })
+                        </div>
+                        <div class="col-4">
+                            @Html.Editor("searchPhone", new { htmlAttributes = new { @class = "form-control", @placeholder = "Phone..." } })
+                        </div>
+                        <div class="col-4">
+                            @Html.Editor("searchEmail", new { htmlAttributes = new { @class = "form-control", @placeholder = "Email..." } })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <div class="row" style="padding-top:10px">
+                        <div style="max-width:50px;" class="col-12 p-0">
+                            <button type="submit" value="Search" class="btn btn-primary form-control">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            @if (Model.Orders.Count() == 0)
+            {
+                <div class="alert alert-warning mt-3" role="alert">
+                    No Order History in the list ...!
+                </div>
+            }
+            else
+            {
+                <table class="table table-striped border table-hover">
+                    <tr class="table-secondary">
+                        <th>
+                            @Html.DisplayNameFor(e => e.Orders[0].Order.PersonPickUpName)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(e => e.Orders[0].Order.ApplicationUser.Email)
+                        </th>
+
+                        <th class="d-none d-md-table-cell">
+                            @Html.DisplayNameFor(e => e.Orders[0].Order.PickUpTime)
+                        </th>
+
+                        <th class="d-none d-lg-table-cell">
+                            @Html.DisplayNameFor(e => e.Orders[0].Order.OrderTotal)
+                        </th>
+
+                        <th class="d-none d-lg-table-cell">
+                            Total Items
+                        </th>
+
+                        <th>
+
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.Orders)
+                    {
+                        <tr class="col12">
+                            <td>
+                                @Html.DisplayFor(e => item.Order.PersonPickUpName)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(e => item.Order.ApplicationUser.Email)
+                            </td>
+
+                            <td class="d-none d-md-table-cell">
+                                @Html.DisplayFor(e => item.Order.PickUpTime)
+                            </td>
+
+                            <td class="d-none d-lg-table-cell">
+                                @Html.DisplayFor(e => item.Order.OrderTotal)
+                            </td>
+
+                            <td class="d-none d-lg-table-cell">
+                                @Html.DisplayFor(e => item.OrderDetails.Count)
+                            </td>
+
+                            <td>
+                                <button type="button" class="btn btn-success showDetails" data-id="@item.Order.Id" data-toggle="modal">
+                                    <i class="bi bi-card-list"></i>
+                                    Details
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </table>
+
+                <div page-model="@Model.PagingInfo"
+                     page-classes-enabled="true"
+                     page-class="btn border"
+                     page-class-normal="btn btn-light"
+                     page-class-selected="btn btn-info active"
+                     class="btn-group float-right">
+
+                </div>
+
+                <br />
+            }
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div style="max-width:75%" class="modal-dialog-centered modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-light">
+                <div class="col-10 offset-1">
+                    <center>
+                        <h5 class="modal-title">
+                            Order Details
+                        </h5>
+                    </center>
+                </div>
+                <div class="col-1">
+                    <button class="btn btn-outline-danger float-right close" aria-label="Close" data-dismiss="modal">
+                        &times;
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-body justify-content-between" id="myModalContent">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var URL = '/Customer/Orders/GetOrderDetails';
+
+        $(function () {
+            $(".showDetails").click(function () {
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id');
+
+                $.ajax({
+                    type: "Get",
+                    url: URL,
+                    contentType: "text/html;charset=utf-8",
+                    data: { "id": id },
+                    cache: false,
+                    dataType: "html",
+                    success: function (data) {
+                        $('#myModalContent').html(data);
+                        $('#myModal').modal('show');
+                    },
+                    error: function () {
+                        alert("Dynamic Content Load Failed!");
+                    }
+                });
+            });
+        });
+    </script>
+}

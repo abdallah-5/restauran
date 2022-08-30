@@ -1,0 +1,82 @@
+﻿@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Users List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container whiteBackground border mt-4">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <h1 class="text-info">Users List</h1>
+        </div>
+
+        <div class="col-12 col-md-6 text-md-right">
+            <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">
+                <i class="bi bi-plus-lg"></i>
+                New Employee Redester
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        @if (Model.Count() == 0)
+        {
+            <div class="alert alert-warning mt-3" role="alert">
+                No Users in the list ...!
+            </div>
+        }
+        else
+        {
+            <table class="table table-striped border table-hover">
+                <tr class="table-secondary">
+                    <th>
+                        @Html.DisplayNameFor(e => e.Name)
+                    </th>
+
+                    <th>
+                        @Html.DisplayNameFor(e => e.Email)
+                    </th>
+
+                    <th class="d-none d-md-block">
+                        @Html.DisplayNameFor(e => e.PhoneNumber)
+                    </th>
+
+                    <th>
+
+                    </th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr class="col12">
+                        <td>
+                            @Html.DisplayFor(e => item.Name)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(e => item.Email)
+                        </td>
+
+                        <td class="d-none d-md-block">
+                            @Html.DisplayFor(e => item.PhoneNumber)
+                        </td>
+
+                        <td>
+                            @if (item.LockoutEnd == null || item.LockoutEnd < DateTime.Now)
+                            {
+                                <a class="btn btn-success" asp-action="LockUnLock" asp-route-id="@item.Id">
+                                    <i class="bi bi-unlock-fill"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-danger" asp-action="LockUnLock" asp-route-id="@item.Id">
+                                    <i class="bi bi-lock-fill"></i>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</div>

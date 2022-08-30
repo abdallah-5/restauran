@@ -1,0 +1,82 @@
+﻿@model MenuItemViewModel
+
+@{
+    ViewData["Title"] = "Menu Item Details";
+}
+
+<h1 class="text-primary mt-4">
+    Menu Item Details
+</h1>
+
+<div class="whiteBackground container border mt-4">
+    <div class="row">
+
+        <div class="col-12 col-xl-9">
+
+            <div class="row form-group">
+                <div class="col-12 col-lg-3">
+                    <label asp-for="MenuItem.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-12 col-lg-9 col-xl-7">
+                    <input disabled asp-for="MenuItem.Name" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12 col-lg-3">
+                    <label asp-for="MenuItem.Description" class="col-form-label"></label>
+                </div>
+                <div class="col-12 col-lg-9 col-xl-7">
+                    <textarea disabled asp-for="MenuItem.Description" class="form-control"></textarea>
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12 col-lg-3">
+                    <label asp-for="MenuItem.Price" class="col-form-label"></label>
+                </div>
+                <div class="col-12 col-lg-9 col-xl-7">
+                    <input disabled asp-for="MenuItem.Price" class="form-control" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12 col-lg-3">
+                    <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-12 col-lg-9 col-xl-7">
+                    <input disabled class="form-control" asp-for="MenuItem.Category.Name" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12 col-lg-3">
+                    <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-12 col-lg-9 col-xl-7">
+                    <input disabled class="form-control" asp-for="MenuItem.SubCategory.Name" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12 col-lg-3">
+                    <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+                </div>
+                <div class="col-12 col-lg-9 col-xl-7">
+                    <input disabled class="form-control" asp-for="MenuItem.Spicyness" />
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-12 offset-lg-3 col-lg-9 col-xl-7">
+                    <partial name="_EditAndBackToListButtonsPartial" model="Model.MenuItem.Id" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-3">
+            <img src="@Model.MenuItem.Image" width="100%" style="border:1px solid #BBB9B9;border-radius:5px" alt="Menu Item Image" />
+        </div>
+
+    </div>
+</div>

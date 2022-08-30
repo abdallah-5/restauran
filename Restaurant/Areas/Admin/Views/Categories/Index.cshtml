@@ -1,0 +1,175 @@
+﻿@model IEnumerable<CategoryViewModel>
+@{
+    ViewData["Title"] = "Categories List";
+}
+
+<div class="whiteBackground container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-primary">
+                Categories List
+            </h1>
+        </div>
+    </div>
+
+    <hr />
+
+    <partial name="_CreateCategoryPartial" model="new CategoryViewModel()" />
+
+    @{
+        if (!string.IsNullOrEmpty(ViewBag.msg))
+        {
+            <div class="alert alert-danger mt-4" role="alert">
+                ViewBag.msg
+            </div>
+        }
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning mt-4" role="alert">
+            No Categories In The List ...!
+        </div>
+    }
+    else
+    {
+        @using (Html.BeginForm("DeleteAll", "Categories", FormMethod.Post))
+        {
+            <table id="tbl" class="table table-striped table-hover border mt-4">
+                <thead>
+                    <tr class="bg-primary text-white">
+                        <th class="text-center" style="width: 25px;">
+                            <input style="position: initial;" class="form-check-input ckheader" type="checkbox" />
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(e => e.Name)
+                        </th>
+
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr class="deleted">
+                            <td class="text-center" style="width:25px;">
+                                <input class="form-check-input ckitem" type="checkbox" name="ID" value="@category.Id" />
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(e => category.Name)
+                            </td>
+
+                            <td style="width:150px">
+                                <partial name="_OperationButtonsBytePartial" model="@category.Id" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                @if (Model.Any())
+                {
+                    <tfoot>
+                        <tr>
+                            <td class="text-center">
+                                <input id="btnSub" type="submit" class="btn btn-danger" value="Delete All" />
+                            </td>
+
+                            <td></td>
+
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        }
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $('.js-delete').on('click', function () {
+                var btn = $(this);
+
+                bootbox.confirm({
+                    message: "Are you sure, You want to delete this Category?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-outline-secondary'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/admin/categories/delete/' + btn.data('id'),
+                                success: function () {
+                                    var categoryContainer = btn.parents('.deleted');
+                                    categoryContainer.addClass('animate__animated animate__zoomOut');
+
+                                    setTimeout(function () {
+                                        categoryContainer.remove();
+                                    }, 1000);
+
+                                    toastr.success('Category deleted successfully.');
+                                },
+                                error: function () {
+                                    toastr.error('Something went wrong!');
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+
+            $('#btnSub').click(function () {
+                var count = $(".ckitem:checked").length;
+
+                if (count == 0) {
+                    alert("You Don\'t Chosse Any Category !");
+                    return false;
+                }
+                else {
+                    return confirm("Are you sure, You want to delete this Category(s)?");
+                }
+            });
+
+
+            var $tbl = $('#tbl');
+            var $header = $tbl.find('thead .ckheader');
+            var $item = $tbl.find('tbody .ckitem');
+
+            $(function () {
+                $item.on('change', function () {
+                    if ($(this).is(':checked')) {
+                        $(this).closest('tr').addClass('newRowColor');
+                    }
+                    else {
+                        $(this).closest('tr').removeClass('newRowColor');
+                    }
+                });
+
+                $header.change(function () {
+                    var c = this.checked;
+                    $item.prop("checked", c);
+                    $item.trigger('check');
+
+                    if ($(this).is(':checked')) {
+                        $($item).closest('tr').addClass('newRowColor');
+                    }
+                    else {
+                        $($item).closest('tr').removeClass('newRowColor');
+                    }
+                });
+            });
+        });
+    </script>
+}

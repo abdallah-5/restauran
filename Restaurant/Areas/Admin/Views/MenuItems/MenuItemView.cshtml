@@ -1,0 +1,168 @@
+﻿@model MenuItemViewModel
+
+@{
+    ViewData["Title"] = "Menu Item";
+}
+
+<h1 class="text-primary mt-4">
+    @(Model.MenuItem.Id > 0 ? "Edit" : "Create") Menu Item
+</h1>
+
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<div class="whiteBackground container border mt-4">
+    <form asp-action="@(Model.MenuItem.Id > 0 ? "Edit" : "Create")" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        @if (Model.MenuItem.Id > 0)
+        {
+            @Html.HiddenFor(e => e.MenuItem.Id)
+            @Html.HiddenFor(e => e.MenuItem.Image)
+        }
+
+        <div class="row">
+
+            <div class="col-12 col-xl-9">
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.Name" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input asp-for="MenuItem.Name" class="form-control" autocomplete="off" maxlength="100" />
+                        <span asp-validation-for="MenuItem.Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.Description" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <textarea asp-for="MenuItem.Description" class="form-control" maxlength="250"></textarea>
+                        <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.Price" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input required value="@(Model.MenuItem.Id > 0 ? Model.MenuItem.Price : "")" asp-for="MenuItem.Price" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="MenuItem.Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.Image" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input id="Poster" type="file" asp-for="MenuItem.Image" class="form-control" accept="*/image" />
+                        <span asp-validation-for="MenuItem.Image" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.CategoryId" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <select id="ddlCategories" class="form-control" asp-for="MenuItem.CategoryId" asp-items="@(new SelectList(Model.CategoriesList, "Id", "Name"))">
+                            @if (!(Model.MenuItem.Id > 0))
+                            {
+                                <option selected="true" disabled="disabled">-- Select Category --</option>
+                            }
+                        </select>
+                        <span asp-validation-for="MenuItem.CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.SubCategoryId" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <select id="ddlSubCategories" class="form-control" asp-for="MenuItem.SubCategoryId" asp-items="@(new SelectList(string.Empty, "Id", "Name"))">
+                            @if (!(Model.MenuItem.Id > 0))
+                            {
+                                <option selected="true" disabled="disabled">-- Select Sub Category --</option>
+                            }
+                        </select>
+                        <span asp-validation-for="MenuItem.SubCategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MenuItem.Spicyness" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <select id="ddlMenuItems" class="form-control" asp-for="MenuItem.Spicyness" asp-items="Html.GetEnumSelectList<MenuItem.ESpicy>()">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 offset-lg-3 col-lg-9 col-xl-7">
+                        <partial name="@(Model.MenuItem.Id > 0 ? "_UpdateAndBackToListButtonsPartial" : "_CreateAndBackToListButtonsPartial")" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-3 @(Model.MenuItem.Id > 0 ? "" : "d-none")">
+                <img src="@Model.MenuItem.Image" width="100%" style="border:1px solid #BBB9B9;border-radius:5px" alt="Menu Item Image" />
+            </div>
+
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        function updateSubCategoriesList() {
+            var selectedCategory = document.getElementById("ddlCategories").value;
+            $list = $('#ddlSubCategories');
+
+            $.ajax({
+                url: '/admin/subcategories/getsubcategories/' + selectedCategory,
+                type: 'GET',
+                dataType: 'text',
+                success: function (data) {
+                    results = JSON.parse(data);
+                    $list.html('');
+                    var items = '';
+                    for (i in results) {
+                        items += '<option value="' + results[i].value + '">' + results[i].text + '</option>';
+                    }
+                    $list.html(items);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            updateSubCategoriesList();
+
+
+            $('#Poster').on('change', function () {
+                var selectedFile = $(this).val().split('\\').pop();
+                $(this).text(selectedFile);
+            });
+        });
+
+        $("#ddlCategories").on("change", function () {
+            updateSubCategoriesList();
+        });
+
+        tinymce.init({
+            selector: 'textarea',
+            Plugins: 'lists',
+            menubar: 'file edit format'
+        });
+
+    </script>
+}

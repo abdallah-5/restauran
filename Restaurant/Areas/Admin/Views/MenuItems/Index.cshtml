@@ -1,0 +1,196 @@
+﻿@model IEnumerable<MenuItem>
+
+@{
+    ViewData["Title"] = "Menu Item List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="whiteBackground container mt-4">
+    <div class="row">
+        <div class="col-12 col-md-9">
+            <h1 class="text-primary">
+                Menu Item List
+            </h1>
+        </div>
+        <div class="col-12 col-md-3 text-md-right mt-3">
+            <partial name="_CreateButtonPartial" />
+        </div>
+    </div>
+
+    <hr />
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning mt-4" role="alert">
+            No Sub Menu Item In The List ...!
+        </div>
+    }
+    else
+    {
+        @using (Html.BeginForm("DeleteAll", "MenuItems", FormMethod.Post))
+        {
+            <table id="tbl" class="table table-striped table-hover border mt-4">
+                <thead class="col-12">
+                    <tr class="row m-0 bg-primary text-white">
+                        <th class="col-1 text-right">
+                            <input style="position: initial;" class="form-check-input ckheader" type="checkbox" />
+                        </th>
+
+                        <th class="col-4 col-lg-2">
+                            @Html.DisplayNameFor(e => e.Name)
+                        </th>
+
+                        <th class="col-2 col-lg-2 col-xl-1">
+                            @Html.DisplayNameFor(e => e.Price)
+                        </th>
+
+                        <th class="d-none d-lg-table-cell col-lg-2">
+                            @Html.DisplayNameFor(e => e.CategoryId)
+                        </th>
+
+                        <th class="d-none d-lg-table-cell col-lg-2">
+                            @Html.DisplayNameFor(e => e.SubCategoryId)
+                        </th>
+
+                        <th class="d-none d-xl-table-cell col-xl-2"></th>
+
+                        <th class="col-5 col-lg-3 col-xl-2"></th>
+                    </tr>
+                </thead>
+                <tbody class="col-12">
+                    @foreach (var menuItem in Model)
+                    {
+                        <tr class="row m-0 deleted">
+                            <td class="col-1 text-right">
+                                <input class="form-check-input ckitem" type="checkbox" name="ID" value="@menuItem.Id" />
+                            </td>
+
+                            <td class="col-4 col-lg-2">
+                                @Html.DisplayFor(e => menuItem.Name)
+                            </td>
+
+                            <td class="col-2 col-lg-2 col-xl-1">
+                                @Html.DisplayFor(e => menuItem.Price)
+                            </td>
+
+                            <td class="d-none d-lg-table-cell col-lg-2">
+                                @Html.DisplayFor(e => menuItem.Category.Name)
+                            </td>
+
+                            <td class="d-none d-lg-table-cell col-lg-2">
+                                @Html.DisplayFor(e => menuItem.SubCategory.Name)
+                            </td>
+
+                            <td class="d-none d-xl-table-cell col-xl-2">
+                                <img width="50" src="@menuItem.Image" alt="Menu Item Image" />
+                            </td>
+
+                            <td class="col-5 text-right col-lg-3 col-xl-2">
+                                <partial name="_OperationButtonsPartial" model="@menuItem.Id" />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                @if (Model.Any())
+                {
+                    <tfoot class="col-12">
+                        <tr class="row m-0">
+                            <td class="col-2 text-center">
+                                <input id="btnSub" type="submit" class="btn btn-danger" value="Delete All" />
+                            </td>
+
+                            <td class="col-10"></td>
+                        </tr>
+                    </tfoot>
+                }
+            </table>
+        }
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $('.js-delete').on('click', function () {
+                var btn = $(this);
+
+                bootbox.confirm({
+                    message: "Are you sure, You want to delete this Menu Item?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-outline-secondary'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                url: '/admin/menuitems/delete/' + btn.data('id'),
+                                success: function () {
+                                    var categoryContainer = btn.parents('.deleted');
+                                    categoryContainer.addClass('animate__animated animate__zoomOut');
+
+                                    setTimeout(function () {
+                                        categoryContainer.remove();
+                                    }, 1000);
+
+                                    toastr.success('Menu Item Deleted Successfully.');
+                                },
+                                error: function () {
+                                    toastr.error('Something Went Wrong!');
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+
+            $('#btnSub').click(function () {
+                var count = $(".ckitem:checked").length;
+
+                if (count == 0) {
+                    alert("You Don\'t Chosse Any Menu Item !");
+                    return false;
+                }
+                else {
+                    return confirm("Are you sure, You want to delete this Menu Item(s)?");
+                }
+            });
+
+            var $tbl = $('#tbl');
+            var $header = $tbl.find('thead .ckheader');
+            var $item = $tbl.find('tbody .ckitem');
+
+            $(function () {
+                $item.on('change', function () {
+                    if ($(this).is(':checked')) {
+                        $(this).closest('tr').addClass('newRowColor');
+                    }
+                    else {
+                        $(this).closest('tr').removeClass('newRowColor');
+                    }
+                });
+
+                $header.change(function () {
+                    var c = this.checked;
+                    $item.prop("checked", c);
+                    $item.trigger('check');
+
+                    if ($(this).is(':checked')) {
+                        $($item).closest('tr').addClass('newRowColor');
+                    }
+                    else {
+                        $($item).closest('tr').removeClass('newRowColor');
+                    }
+                });
+            });
+        });
+    </script>
+}

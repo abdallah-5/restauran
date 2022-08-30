@@ -1,0 +1,13 @@
+﻿@model int
+
+<div class="btn-group" role="group">
+    <a asp-action="Details" class="btn btn-success text-white" asp-route-id="@Model">
+        <i class="bi bi-list-ul"></i>
+    </a>
+    <a asp-action="Edit" class="btn btn-primary text-white" asp-route-id="@Model">
+        <i class="bi bi-pencil-fill"></i>
+    </a>
+    <a href="javascript:;" class="btn btn-danger text-white js-delete" data-id="@Model">
+        <i class="bi bi-trash-fill"></i>
+    </a>
+</div>

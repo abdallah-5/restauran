@@ -1,0 +1,23 @@
+﻿@model string
+
+<div style="width:100%">
+    @if (Model == SD.StatusSubmitted)
+    {
+        <img src="~/img/OrderPlaced.PNG" width="100%" />
+    }
+
+    @if (Model == SD.StatusInProcess)
+    {
+        <img src="~/img/InTheKitchen.PNG" width="100%" />
+    }
+
+    @if (Model == SD.StatusReady)
+    {
+        <img src="~/img/ReadyForPickup.PNG" width="100%" />
+    }
+
+    @if (Model == SD.StatusCompleted)
+    {
+        <img src="~/img/Completed.PNG" width="100%" />
+    }
+</div>

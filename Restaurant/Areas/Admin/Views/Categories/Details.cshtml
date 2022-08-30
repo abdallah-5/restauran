@@ -1,0 +1,25 @@
+﻿@model CategoryViewModel
+
+@{
+    ViewData["Title"] = "Category Details";
+}
+
+<h1 class="text-primary mt-4">
+    Category Details
+</h1>
+
+<div class="whiteBackground container border mt-4">
+    <div class="row form-group">
+        <div class="col-12 col-lg-2">
+            <label asp-for="Name" class="col-form-label"></label>
+        </div>
+        <div class="col-12 col-lg-10 col-xl-7">
+            <input disabled asp-for="Name" class="form-control" />
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-12 offset-lg-2 col-lg-10 col-xl-7">
+            <partial name="_EditAndBackToListByteButtonsPartial" model="Model.Id" />
+        </div>
+    </div>
+</div>

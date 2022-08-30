@@ -1,0 +1,118 @@
+﻿@model CouponViewModel
+
+@{
+    ViewData["Title"] = "Coupon";
+}
+
+<h1 class="text-primary mt-4">
+    @(Model.Id > 0 ? "Edit" : "Create") Coupon
+</h1>
+
+<div class="whiteBackground container border mt-4">
+
+    <div class="">
+        <div id="poster-container" class="@(Model.Id > 0 ? string.Empty : "d-none")">
+            <img style="width: 100%; height: 100%; max-height:100px;border-radius: 5px" src="@(Model.Id > 0 ? $"data:image/*;base64,{Convert.ToBase64String(Model.Picture)}" : string.Empty)" alt="Coupon Image" class="mb-3 img-thumbnail" />
+        </div>
+    </div>
+
+    <form asp-action="@(Model.Id > 0 ? "Edit" : "Create")" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        @if (Model.Id > 0)
+        {
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Picture" />
+        }
+
+        <div class="row">
+            <div class="col-12 col-xl-9">
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="Name" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input asp-for="Name" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="Picture" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input id="CouponImg" accept="image/*" type="file" asp-for="Picture" class="form-control" />
+                        <span asp-validation-for="Picture" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="CouponType" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <select asp-for="CouponType" class="form-control" asp-items="Html.GetEnumSelectList<Coupon.ECouponType>()"></select>
+                        <span asp-validation-for="CouponType" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="Discount" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input asp-for="Discount" class="form-control" value="@(Model.Discount > 0 ? Model.Discount : string.Empty)" autocomplete="off" />
+                        <span asp-validation-for="Discount" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="MinimumAmount" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input asp-for="MinimumAmount" class="form-control" value="@(Model.MinimumAmount > 0 ? Model.MinimumAmount : string.Empty)" autocomplete="off" />
+                        <span asp-validation-for="MinimumAmount" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 col-lg-3">
+                        <label asp-for="IsActive" class="col-form-label"></label>
+                    </div>
+                    <div class="col-12 col-lg-9 col-xl-7">
+                        <input type="checkbox" asp-for="IsActive" class="form-control" />
+                        <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <div class="col-12 offset-lg-3 col-lg-9 col-xl-7">
+                        <partial name="@(Model.Id > 0 ? "_UpdateAndBackToListButtonsPartial" : "_CreateAndBackToListButtonsPartial")" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $('#CouponImg').on('change', function () {
+                var selectedFile = $(this).val().split('\\').pop();
+                $(this).text(selectedFile);
+
+                var posterContainer = $('#poster-container');
+                var image = window.URL.createObjectURL(this.files[0]);
+
+                posterContainer.removeClass('d-none');
+                posterContainer.find('img').attr('src', image);
+            });
+        });
+    </script>
+}
